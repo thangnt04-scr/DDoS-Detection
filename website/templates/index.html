@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DDoS Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ DDoS Detection System</h1>
+            <div class="status">
+                <span id="status">Ready</span>
+            </div>
+        </header>
+
+        <div class="stats-bar">
+            <div class="stat">
+                <label>Total:</label>
+                <span id="total">0</span>
+            </div>
+            <div class="stat">
+                <label>Normal:</label>
+                <span id="normal" class="green">0</span>
+            </div>
+            <div class="stat">
+                <label>Attack:</label>
+                <span id="attack" class="red">0</span>
+            </div>
+            <div class="stat">
+                <label>Blocked:</label>
+                <span id="blocked" class="red">0</span>
+            </div>
+            <div class="stat">
+                <label>Rate:</label>
+                <span id="pps">0 pkt/s</span>
+            </div>
+            <div class="stat">
+                <label>Attack %:</label>
+                <span id="attack-pct">0%</span>
+            </div>
+            <div class="stat">
+                <label>Uptime:</label>
+                <span id="uptime">0s</span>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button onclick="startCapture()" id="btn-start">▶ Start</button>
+            <button onclick="stopCapture()" id="btn-stop" disabled>⏸ Stop</button>
+            <button onclick="clearAll()">🗑️ Clear</button>
+            <button onclick="exportData()">💾 Export</button>
+            <button onclick="showBlockedIPs()">🚫 Blocked IPs</button>
+        </div>
+
+        <div class="main">
+            <div class="packet-list">
+                <h3>Packets</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Time</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Proto</th>
+                                <th>Len</th>
+                                <th>TTL</th>
+                                <th>Threat</th>
+                                <th>Conf</th>
+                            </tr>
+                        </thead>
+                        <tbody id="packets"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="analysis">
+                <h3>AI Analysis</h3>
+                <div class="analysis-content">
+                    <div class="metric">
+                        <label>Threat Level</label>
+                        <div id="threat" class="threat-badge">-</div>
+                    </div>
+                    <div class="metric">
+                        <label>Confidence</label>
+                        <div id="confidence" class="big-value">-</div>
+                    </div>
+                    <div class="metric">
+                        <label>Attack Probability</label>
+                        <div class="progress-bar">
+                            <div id="prob-bar" class="progress-fill"></div>
+                            <span id="prob-text" class="progress-text">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Details</h3>
+                <div id="details" class="details">
+                    <p>Click a packet to view details</p>
+                </div>
+
+                <h3>🚫 Blocked IPs</h3>
+                <div id="blocked-list" class="details">
+                    <p>No IPs blocked yet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -62,8 +62,8 @@ Hệ thống phát hiện và ngăn chặn tấn công DDoS real-time gồm 4 gi
 ### Clone & cài dependencies
 
 ```bash
-git clone <repository-url>
-cd <project-folder>
+git clone https://github.com/thangnt04-scr/DDoS-Detection.git
+cd DDoS-Detection
 
 pip install jupyter pandas numpy scikit-learn xgboost lightgbm \
             imbalanced-learn matplotlib seaborn flask flask-socketio

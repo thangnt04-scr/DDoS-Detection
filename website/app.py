@@ -134,6 +134,7 @@ def log_request():
             'len': 400,
             'ttl': 64,
             'threat': 'Unknown',
+            'threat_level': 'UNKNOWN',
             'conf': 0,
             'prob': 0,
             'blocked': False
@@ -143,6 +144,21 @@ def log_request():
         socketio.emit('packet', pkt)
         return
     
+    # Determine threat level
+    def get_threat_level(is_attack, confidence, rate):
+        if not is_attack:
+            return 'NORMAL'
+        if confidence >= 0.85 or rate > 10:
+            return 'CRITICAL'
+        elif confidence >= 0.65 or rate > 6:
+            return 'HIGH'
+        elif confidence >= 0.45 or rate > 3:
+            return 'MEDIUM'
+        else:
+            return 'LOW'
+
+    threat_level = get_threat_level(analysis['attack'], analysis['conf'], analysis['rate'])
+
     # Create packet
     pkt = {
         'no': stats['total'] + 1,
@@ -153,6 +169,7 @@ def log_request():
         'len': 400,
         'ttl': 64,
         'threat': 'Attack' if analysis['attack'] else 'Normal',
+        'threat_level': threat_level,
         'conf': analysis['conf'],
         'prob': analysis['conf'] if analysis['attack'] else 1 - analysis['conf'],
         'blocked': False

@@ -84,6 +84,18 @@ socket.on('error', (data) => {
     alert('Error: ' + data.msg);
 });
 
+function getThreatLevelClass(level) {
+    const map = {
+        'CRITICAL': 'level-critical',
+        'HIGH':     'level-high',
+        'MEDIUM':   'level-medium',
+        'LOW':      'level-low',
+        'NORMAL':   'level-normal',
+        'UNKNOWN':  'level-unknown'
+    };
+    return map[level] || 'level-unknown';
+}
+
 function addPacketRow(pkt) {
     const tbody = document.getElementById('packets');
     const row = tbody.insertRow(0);
@@ -102,6 +114,8 @@ function addPacketRow(pkt) {
                        pkt.threat === 'Normal' ? 'green' : '';
     
     const threatText = pkt.blocked ? '🚫 BLOCKED' : pkt.threat;
+    const level = pkt.threat_level || 'UNKNOWN';
+    const levelClass = getThreatLevelClass(level);
     
     row.innerHTML = `
         <td>${pkt.no}</td>
@@ -112,6 +126,7 @@ function addPacketRow(pkt) {
         <td>${pkt.len}</td>
         <td>${pkt.ttl}</td>
         <td class="${threatClass}">${threatText}</td>
+        <td><span class="level-badge ${levelClass}">${level}</span></td>
         <td>${(pkt.conf * 100).toFixed(0)}%</td>
     `;
     
@@ -131,6 +146,7 @@ function selectPacket(pkt, row) {
 
 function showDetails(pkt) {
     const details = document.getElementById('details');
+    const level = pkt.threat_level || 'UNKNOWN';
     
     details.innerHTML = `
         <div class="detail-row">
@@ -166,6 +182,10 @@ function showDetails(pkt) {
             <span class="detail-value ${pkt.threat === 'Attack' ? 'red' : 'green'}">${pkt.threat}</span>
         </div>
         <div class="detail-row">
+            <span class="detail-label">Threat Level:</span>
+            <span class="detail-value"><span class="level-badge ${getThreatLevelClass(level)}">${level}</span></span>
+        </div>
+        <div class="detail-row">
             <span class="detail-label">Confidence:</span>
             <span class="detail-value">${(pkt.conf * 100).toFixed(2)}%</span>
         </div>
@@ -176,6 +196,10 @@ function showDetails(pkt) {
     `;
     
     // Update analysis panel
+    const threatLevelEl = document.getElementById('threat-level');
+    threatLevelEl.textContent = level;
+    threatLevelEl.className = 'threat-level-badge ' + getThreatLevelClass(level);
+
     const threat = document.getElementById('threat');
     threat.textContent = pkt.threat;
     threat.className = 'threat-badge ' + (pkt.threat === 'Attack' ? 'attack' : 'normal');
